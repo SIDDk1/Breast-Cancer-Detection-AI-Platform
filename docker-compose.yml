@@ -1,0 +1,59 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: breastai-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: breast_cancer_saas
+    networks:
+      - breastai-net
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: breastai-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./weights:/app/weights
+      - ./uploads:/app/uploads
+      - ./outputs:/app/outputs
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017
+      - MONGO_DB_NAME=breast_cancer_saas
+    depends_on:
+      - mongodb
+    networks:
+      - breastai-net
+
+  frontend:
+    image: node:20-alpine
+    container_name: breastai-frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:8000
+    command: sh -c "npm install && npm start"
+    depends_on:
+      - backend
+    networks:
+      - breastai-net
+
+volumes:
+  mongo_data:
+
+networks:
+  breastai-net:
+    driver: bridge

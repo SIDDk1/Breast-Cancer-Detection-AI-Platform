@@ -1,0 +1,91 @@
+================================================================================
+                        PROJECT SETUP & RUN GUIDE
+================================================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  METHOD 1 — RUN VIA TERMINAL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  STEP 1 — Create & Activate Virtual Environment
+  ------------------------------------------------
+  Navigate to your project folder and run:
+
+      python -m venv venv
+
+  Then activate the virtual environment:
+
+      ..\venv\Scripts\Activate.ps1
+
+
+  STEP 2 — Install Requirements
+  ------------------------------------------------
+  After activating the venv, install all dependencies:
+
+      pip install -r requirements.txt
+
+
+  STEP 3 — Open Two PowerShell Terminals
+  ------------------------------------------------
+  Open two separate PowerShell terminal windows.
+
+
+  STEP 4 — Activate venv in Both Terminals
+  ------------------------------------------------
+  Run the activation command in each terminal:
+
+      ..\venv\Scripts\Activate.ps1
+
+
+  STEP 5 — Run Frontend  (Terminal 1)
+  ------------------------------------------------
+  Navigate to the frontend folder:
+
+      ..\project\frontend\
+
+  Then start the frontend:
+
+      npm start
+
+
+  STEP 6 — Run Backend  (Terminal 2)
+  ------------------------------------------------
+  Navigate to the project folder:
+
+      ..\project
+
+  Then start the backend server:
+
+      python -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  METHOD 2 — RUN DIRECTLY (Without Terminal)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  STEP 1 — Unzip the Project File
+  ------------------------------------------------
+  Extract the project ZIP to your desired location.
+
+
+  STEP 2 — Open the Project Folder
+  ------------------------------------------------
+  Navigate into the extracted project folder.
+
+
+  STEP 3 — Run the Batch File
+  ------------------------------------------------
+  Double-click on:
+
+      run.bat
+
+
+  STEP 4 — Confirm in Terminal
+  ------------------------------------------------
+  A terminal window will open automatically.
+  Press  Y  and hit Enter when prompted.
+
+
+================================================================================
+                              END OF GUIDE
+================================================================================

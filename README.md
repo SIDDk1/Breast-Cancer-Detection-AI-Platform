@@ -68,7 +68,7 @@ e:/final_year/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/Namanverma991/breast-cancer-ai.git
+   git clone https://github.com/SIDDk1/Breast-Cancer-Detection-AI-Platform.git
    cd breast-cancer-ai
    ```
 
