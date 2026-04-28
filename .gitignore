@@ -32,6 +32,7 @@ test_outputs/
 weights/
 temp/
 mongo_data/
+mongo_local/
 
 # Logs and OS files
 *.log

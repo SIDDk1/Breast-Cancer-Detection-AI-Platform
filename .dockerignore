@@ -1,0 +1,15 @@
+venv/
+env/
+.venv/
+.git/
+frontend/node_modules/
+backend/__pycache__/
+**/__pycache__/
+mongo_data/
+mongo_local/
+outputs/
+uploads/
+temp/
+test_outputs/
+project/
+*.log

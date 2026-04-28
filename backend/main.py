@@ -3,14 +3,14 @@ FastAPI main application entry point.
 """
 
 import os
-from pathlib import Path
 from contextlib import asynccontextmanager
+from pathlib import Path
+
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import JSONResponse
-import torch
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -25,9 +25,26 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 UPLOADS_DIR = PROJECT_ROOT / "uploads"
 OUTPUTS_DIR = PROJECT_ROOT / "outputs"
 WEIGHTS_DIR = PROJECT_ROOT / "weights"
+FRONTEND_BUILD_DIR = PROJECT_ROOT / "frontend" / "build"
 
 UPLOADS_DIR.mkdir(exist_ok=True)
 OUTPUTS_DIR.mkdir(exist_ok=True)
+
+
+def _get_allowed_origins() -> list[str]:
+    raw = os.getenv("CORS_ORIGINS", "")
+    if raw.strip():
+        return [origin.strip() for origin in raw.split(",") if origin.strip()]
+    return [
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ]
+
+
+def _allow_all_origins(origins: list[str]) -> bool:
+    return "*" in origins
 
 
 @asynccontextmanager
@@ -64,9 +81,11 @@ app = FastAPI(
 )
 
 # CORS
+allowed_origins = _get_allowed_origins()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all for development
+    allow_origins=["*"] if _allow_all_origins(allowed_origins) else allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -78,6 +97,8 @@ app.mount("/images", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 # Trick: also serve outputs
 from starlette.staticfiles import StaticFiles as SFiles
 app.mount("/outputs", SFiles(directory=str(OUTPUTS_DIR)), name="outputs")
+if FRONTEND_BUILD_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(FRONTEND_BUILD_DIR / "static")), name="frontend-static")
 
 # Routes
 app.include_router(predict_router, prefix="/api", tags=["Prediction"])
@@ -103,4 +124,19 @@ async def health():
 
 @app.get("/", tags=["System"])
 async def root():
+    index_file = FRONTEND_BUILD_DIR / "index.html"
+    if index_file.exists():
+        return FileResponse(index_file)
     return {"message": "Breast Cancer AI SaaS API", "docs": "/docs"}
+
+
+@app.get("/{full_path:path}", include_in_schema=False)
+async def frontend_app(full_path: str):
+    if not FRONTEND_BUILD_DIR.exists():
+        return JSONResponse(status_code=404, content={"detail": "Not found"})
+
+    requested = FRONTEND_BUILD_DIR / full_path
+    if full_path and requested.exists() and requested.is_file():
+        return FileResponse(requested)
+
+    return FileResponse(FRONTEND_BUILD_DIR / "index.html")
